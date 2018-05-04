@@ -6,9 +6,11 @@ from web3 import Web3, TestRPCProvider, HTTPProvider
 # from solc import compile_source
 from web3.contract import ConciseContract
 
+MAIN_ACCOUNT = None
+
 def compile_source(src):
     print('Start to compile source...')
-    filename = '/tmp/' + str(hash(src))
+    filename = str(hash(src))+'.sol'
     files_before = subprocess.check_output('ls').decode('utf8').split('\n')
     with open(filename, 'w') as f:
         f.write(src)
@@ -26,6 +28,12 @@ def compile_source(src):
         elif '.bin' == target[-4:]:
             with open(target, 'r') as f:
                 ret['bin'] = f.read()
+        else:
+            continue
+
+        subprocess.check_call('rm %s' % target, shell=True)
+
+    subprocess.check_call('rm %s' % filename, shell=True)
     print('Compiled!\nThe return is:\n' , ret)
     return ret
 
@@ -55,6 +63,8 @@ contract Greeter {
 # web3.py instance
 w3 = Web3(HTTPProvider('http://localhost:8545'))
 
+MAIN_ACCOUNT = w3.eth.accounts[0]
+
 contract_interface = compile_source(contract_source_code)
 # with open('Greeter_sol_Greeter.abi', 'r') as f:
 #     contract_interface['abi'] = json.load(f)
@@ -67,7 +77,7 @@ contract_interface = compile_source(contract_source_code)
 contract = w3.eth.contract(abi=contract_interface['abi'], bytecode=contract_interface['bin'])
 
 # Get transaction hash from deployed contract
-tx_hash = contract.deploy(transaction={'from': w3.eth.accounts[0]})
+tx_hash = contract.deploy(transaction={'from': MAIN_ACCOUNT})
 
 # Get tx receipt to get contract address
 tx_receipt = w3.eth.getTransactionReceipt(tx_hash)
