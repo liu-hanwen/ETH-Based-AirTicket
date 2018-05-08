@@ -10,11 +10,12 @@ MAIN_ACCOUNT = None
 
 def compile_source(src):
     print('Start to compile source...')
-    filename = str(hash(src))+'.sol'
+    filename = str(abs(hash(src)))+'.sol'
     files_before = subprocess.check_output('ls').decode('utf8').split('\n')
     with open(filename, 'w') as f:
         f.write(src)
-    subprocess.check_call("solcjs --abi --bin %s \n exit 0" % filename, shell=True)
+    print("solcjs --abi --bin %s \n exit 0" % filename)
+    print(subprocess.check_call("solcjs --abi --bin %s \n exit 0" % filename, shell=True))
     ret = {}
 
     files_after = subprocess.check_output('ls').decode('utf8').split('\n')
@@ -31,9 +32,9 @@ def compile_source(src):
         else:
             continue
 
-        subprocess.check_call('rm %s' % target, shell=True)
+    #     subprocess.check_call('rm %s \n exit 0' % target, shell=True)
 
-    subprocess.check_call('rm %s' % filename, shell=True)
+    # subprocess.check_call('rm %s \n exit 0' % filename, shell=True)
     print('Compiled!\nThe return is:\n' , ret)
     return ret
 
@@ -85,7 +86,9 @@ contract_address = tx_receipt['contractAddress']
 
 # Contract instance in concise mode
 contract_instance = w3.eth.contract(abi=contract_interface['abi'], address=contract_address, ContractFactoryClass=ConciseContract)
-
+# contract_instance = w3.eth.contract(address=contract_address, abi=contract_interface['abi'])
+print(contract_interface['abi'], contract_address)
+print(type(contract_interface['abi']), type(contract_address))
 # Getters + Setters for web3.eth.contract object
 print('Contract value: {}'.format(contract_instance.greet()))
 contract_instance.setGreeting('Nihao', transact={'from': w3.eth.accounts[0]})

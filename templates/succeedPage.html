@@ -1,0 +1,18 @@
+<script language="javascript">
+function tiao(){
+    window.history.back(-1);
+}
+ setTimeout("tiao()",5000);
+ function changSec(){
+    $("myspan").innerText=parseInt($("myspan").innerText)-1;
+ }
+var mytime=setInterval("changSec()",1000);
+function $(id){
+    return document.getElementById(id);
+}
+</script>
+Done! Detail:
+<br />
+{{ Detail }}
+<br />
+ <span id="myspan">5</span>second back to last page...
