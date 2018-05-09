@@ -7,8 +7,13 @@ from jinja2 import Template
 
 ETH_SERVER = 'http://localhost:8545'
 SOL_TEMPLATE_PATH = './contract_template.sol'
+ABI_PATH = './contract.abi'
 
 w3 = Web3(HTTPProvider(ETH_SERVER))
+
+abi = None
+with open(ABI_PATH,'r') as f:
+    abi = json.load(f)
 
 MAIN_ACCOUNT = w3.eth.accounts[0]
 
@@ -44,17 +49,17 @@ def compile_source(src):
 
 def newFlight_submit(conn, args):
 
-    no, comp, time, price, volume, addr, abi, from_, to = None
+    no, comp, time, price, volume, addr, abi, from_, to = None,None,None,None,None,None,None,None,None
 
     '''Check args'''
     try:
-        no = args['no']
-        comp = args['comp']
-        time = args['time']
-        price = int(args['price'])
-        volume = int(args['volume'])
-        from_ = args['from']
-        to = args['to']
+        no = args['No.']
+        comp = args['Company']
+        time = args['Time']
+        price = int(args['Price'])
+        volume = int(args['Volume'])
+        from_ = args['From']
+        to = args['To']
 
     except KeyError as e:
         return str(e)
@@ -80,13 +85,30 @@ def newFlight_submit(conn, args):
     addr = tx_receipt['contractAddress']
     abi = str(contract_interface['abi'])
 
+    if not w3.eth.contract(address= addr, abi=contract_interface['abi'], ContractFactoryClass=ConciseContract).getVolume()==volume:
+        return False
+
 
     '''Update to database'''
-    cmd = '''INSERT INTO flights VALUES (%s, %s, %s, %s, %s, %f, %d, %s, %s)''' % (no, comp, time, from_, to, price, volume, addr, abi)
+    cmd = '''INSERT INTO flights VALUES ('%s', '%s', '%s', '%s', '%s', %d, %d, '%s')''' % (no, comp, time, from_, to, price, volume, addr)
+    print(cmd)
     conn.execute(cmd)
+    conn.commit()
 
 
-    ret = None
-    with open(Website.TEMPLATES_PATH + 'succeedPage.html', 'r') as f:
-        ret = Template(f.read()).render(detail = cmd)
-    return ret
+    # ret = None
+    # with open(Website.TEMPLATES_PATH + 'succeedPage.html', 'r') as f:
+    #     ret = Template(f.read()).render(detail = cmd)
+    # return ret
+
+    return True
+
+def getVolume(addr):
+
+    return w3.eth.contract(
+        abi=abi,
+        address=addr,
+        ContractFactoryClass=ConciseContract
+    ).getVolume()
+
+
