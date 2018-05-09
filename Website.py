@@ -16,6 +16,9 @@ def flightTable_page(conn_path):
         volume = int(Blockchain.getVolume(addr))
         ans.append([no, comp, from_, to, time, price, volume, addr])
     # print(ans)
+    if len(ans)==0:
+        ans = [['NaN' for i in range(8)]]
+        ans[0][-3] = 0
     with open(TEMPLATES_PATH + 'flightsTable.html', 'r') as f:
         with open(Blockchain.ABI_PATH, 'r') as ff:
             ret = Template(f.read()).render(flights_list = ans, abi = str(ff.read()))

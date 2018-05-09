@@ -68,8 +68,6 @@ def submit():
     tkinter.messagebox.showinfo(title='New Flight', message=str(ret))
     refresh()
 
-
-
 bt = tk.Button(frm_l, text = 'Submit', command=submit, width=12, height = 5)
 bt.pack()
 

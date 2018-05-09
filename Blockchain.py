@@ -111,4 +111,11 @@ def getVolume(addr):
         ContractFactoryClass=ConciseContract
     ).getVolume()
 
+def checkTicket(hashvalue, addr):
+    return w3.eth.contract(
+        abi=abi,
+        address=addr,
+        ContractFactoryClass=ConciseContract
+    ).checkTicket(hashvalue)
+
 

@@ -14,7 +14,7 @@ conn = sqlite3.connect(DATABASE_PATH_DIR + DATABASE_NAME)
 if not existedDB:
     # Create table
     conn.execute('''CREATE TABLE flights
-                 (no text, comp text, time text, from text, to text, price integer, volume integer, addr text, abi text)''')
+                 (no text, comp text, time text, from_ text, to_ text, price integer, volume integer, addr text)''')
     conn.commit()
 conn.close()
 
