@@ -101,7 +101,7 @@ def newFlight_submit(conn, args):
     #     ret = Template(f.read()).render(detail = cmd)
     # return ret
 
-    return True
+    return 'Done!'
 
 def getVolume(addr):
 
